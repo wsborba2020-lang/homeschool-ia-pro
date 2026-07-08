@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matemática do Brasileirão · Rodada 1 · Interativo</title>
+<style>
+  :root{--verde:#009c3b;--amarelo:#ffdf00;--azul:#002776;--branco:#fff;--cinza:#f4f6f8;--texto:#1a2634;--certo:#00a651;--errado:#e63946;}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Verdana,sans-serif;}
+  body{background:#dde3ea;color:var(--texto);line-height:1.65;padding:20px;}
+  .pagina{max-width:820px;margin:0 auto 26px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.12);}
+  .conteudo{padding:34px 40px;}
+  h1,h2,h3{line-height:1.25;}
+
+  /* TELA DE CADASTRO */
+  #tela-cadastro{position:fixed;inset:0;background:linear-gradient(135deg,var(--verde),var(--azul));display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;}
+  .card-cadastro{background:#fff;border-radius:20px;padding:40px 34px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35);}
+  .card-cadastro .bola{font-size:3.4rem;animation:girar 3s linear infinite;display:inline-block;}
+  @keyframes girar{to{transform:rotate(360deg);}}
+  .card-cadastro h1{color:var(--azul);font-size:1.7rem;margin:10px 0;}
+  .card-cadastro p{color:#556;margin-bottom:22px;font-size:.95rem;}
+  .card-cadastro label{display:block;text-align:left;font-weight:bold;color:var(--azul);margin:14px 0 5px;font-size:.9rem;}
+  .card-cadastro input{width:100%;padding:13px 16px;border:2px solid #cdd6e0;border-radius:12px;font-size:1rem;transition:.2s;}
+  .card-cadastro input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px rgba(0,156,59,.15);}
+  .btn-principal{background:var(--verde);color:#fff;border:none;padding:15px 30px;border-radius:14px;font-size:1.1rem;font-weight:bold;cursor:pointer;margin-top:22px;width:100%;transition:.2s;box-shadow:0 5px 0 #007a2e;}
+  .btn-principal:hover{transform:translateY(-2px);box-shadow:0 7px 0 #007a2e;}
+  .btn-principal:active{transform:translateY(3px);box-shadow:0 2px 0 #007a2e;}
+  .aviso-erro{color:var(--errado);font-size:.85rem;margin-top:8px;display:none;}
+
+  /* CABEÇALHO DO ALUNO (fixo) */
+  #barra-aluno{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--azul),#001a4d);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,.2);border-radius:0 0 14px 14px;max-width:820px;margin:0 auto 20px;}
+  #barra-aluno .aluno-nome{font-weight:bold;font-size:1.05rem;}
+  #barra-aluno .aluno-nome span{opacity:.75;font-weight:normal;font-size:.85rem;}
+  #placar{background:var(--amarelo);color:var(--azul);padding:7px 16px;border-radius:30px;font-weight:bold;font-size:.95rem;}
+
+  /* CAPA */
+  .rosto{background:linear-gradient(135deg,var(--verde),var(--azul));color:#fff;text-align:center;padding:54px 40px;}
+  .rosto .colecao{letter-spacing:2px;text-transform:uppercase;font-size:.85rem;opacity:.9;}
+  .rosto h1{font-size:2.3rem;margin:14px 0;text-shadow:2px 2px 0 rgba(0,0,0,.25);}
+  .rosto .sub{background:var(--amarelo);color:var(--azul);display:inline-block;padding:8px 22px;border-radius:30px;font-weight:bold;margin:8px 0;}
+
+  /* EXERCÍCIOS */
+  .intro-aluno{background:var(--amarelo);color:var(--azul);text-align:center;font-weight:600;padding:18px 24px;border-radius:10px;margin-bottom:24px;}
+  .destaque{padding:18px 20px;border-left:8px solid var(--verde);background:#eafff1;border-radius:10px;margin-bottom:24px;}
+  .destaque h2{color:var(--verde);margin-bottom:8px;font-size:1.2rem;}
+  .ex{margin-bottom:22px;padding:20px;border:2px solid #e3e8ee;border-radius:14px;transition:.3s;}
+  .ex.ok{border-color:var(--certo);background:#f0fff5;}
+  .ex h3{color:var(--azul);font-size:1.15rem;margin-bottom:12px;border-bottom:3px dashed var(--amarelo);padding-bottom:8px;}
+  .ex p{margin:8px 0;}
+  .conta{font-size:1.2rem;font-weight:bold;color:var(--verde);background:var(--cinza);display:inline-block;padding:8px 14px;border-radius:10px;margin:6px 0;}
+  input.resp{width:64px;padding:6px;border:2px solid var(--azul);border-radius:8px;text-align:center;font-size:1.1rem;font-weight:bold;color:var(--azul);}
+  input.resp.certo{border-color:var(--certo);background:#d6ffe4;color:var(--certo);}
+  input.resp.errado{border-color:var(--errado);background:#ffe0e3;color:var(--errado);}
+  input.texto{width:180px;padding:6px 10px;border:2px solid var(--azul);border-radius:8px;font-size:1rem;}
+  table{width:100%;border-collapse:collapse;margin:12px 0;border-radius:10px;overflow:hidden;}
+  th{background:var(--azul);color:#fff;padding:10px;}
+  td{padding:9px;border:1px solid #dde3ea;text-align:center;}
+  tr:nth-child(even){background:#f0f4f8;}
+  .curiosidade{background:#fff8dc;border-left:6px solid var(--amarelo);padding:12px 16px;border-radius:8px;font-style:italic;margin-top:12px;}
+  .desafio{background:linear-gradient(135deg,var(--amarelo),#ffd000);border:none;}
+  .desafio h3{color:var(--azul);border-color:var(--azul);}
+  .opcao{border:2px solid var(--azul);border-radius:30px;padding:6px 18px;font-weight:bold;cursor:pointer;display:inline-block;margin:4px;user-select:none;transition:.15s;}
+  .opcao.sel{background:var(--verde);color:#fff;border-color:var(--verde);}
+  .feedback{font-weight:bold;margin-left:8px;font-size:.95rem;}
+
+  /* BOTÃO FINALIZAR */
+  .area-final{text-align:center;padding:20px 0 40px;}
+  .btn-finalizar{background:linear-gradient(135deg,var(--amarelo),#ffcc00);color:var(--azul);border:none;padding:18px 44px;border-radius:16px;font-size:1.3rem;font-weight:bold;cursor:pointer;box-shadow:0 6px 0 #d4a600;transition:.2s;}
+  .btn-finalizar:hover{transform:translateY(-2px);box-shadow:0 8px 0 #d4a600;}
+  .btn-finalizar:active{transform:translateY(4px);box-shadow:0 2px 0 #d4a600;}
+
+  /* CERTIFICADO */
+  #certificado{display:none;}
+  .cert-box{border:10px double var(--amarelo);border-radius:16px;padding:40px 34px;text-align:center;background:linear-gradient(160deg,#fff,#f4f8ff);}
+  .cert-box .troféu{font-size:4rem;}
+  .cert-box h2{color:var(--azul);font-size:2rem;margin:10px 0;}
+  .cert-nome{font-size:1.8rem;color:var(--verde);font-weight:bold;border-bottom:3px solid var(--amarelo);display:inline-block;padding:4px 30px;margin:16px 0;}
+  .cert-placar{font-size:1.4rem;font-weight:bold;color:var(--azul);margin:18px 0;}
+  .estrelas{font-size:2rem;margin:10px 0;}
+  .btns-cert{margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-sec{background:var(--azul);color:#fff;border:none;padding:12px 24px;border-radius:12px;font-weight:bold;cursor:pointer;font-size:1rem;}
+  .btn-sec:hover{opacity:.9;}
+
+  /* EMOJIS CAINDO */
+  .emoji-cai{position:fixed;top:-60px;font-size:2.2rem;z-index:9999;pointer-events:none;animation:cair linear forwards;}
+  @keyframes cair{to{transform:translateY(105vh) rotate(360deg);opacity:.9;}}
+
+  @media print{
+    body{background:#fff;padding:0;}
+    #barra-aluno,.area-final,.btns-cert,.btn-principal{display:none!important;}
+    .pagina{box-shadow:none;margin:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- TELA DE CADASTRO -->
+<div id="tela-cadastro">
+  <div class="card-cadastro">
+    <div class="bola">⚽</div>
+    <h1>Matemática do Brasileirão</h1>
+    <p>Rodada 1 · 2º Ano · Antes de entrar em campo, faça sua escalação!</p>
+    <label for="in-nome">Nome do craque</label>
+    <input type="text" id="in-nome" placeholder="Digite seu nome" autocomplete="off">
+    <label for="in-time">Seu time do coração</label>
+    <input type="text" id="in-time" placeholder="Ex: São Paulo, Flamengo..." autocomplete="off">
+    <label for="in-serie">Turma / Série (opcional)</label>
+    <input type="text" id="in-serie" placeholder="Ex: 2º ano A" autocomplete="off">
+    <div class="aviso-erro" id="aviso">✋ Escreva pelo menos o seu nome para começar!</div>
+    <button class="btn-principal" onclick="entrar()">⚽ ENTRAR EM CAMPO!</button>
+  </div>
+</div>
+
+<!-- BARRA DO ALUNO -->
+<div id="barra-aluno" style="display:none;">
+  <div class="aluno-nome" id="saudacao"></div>
+  <div id="placar">🥅 Gols: 0 / 14</div>
+</div>
+
+<!-- CAPA -->
+<div class="pagina">
+  <div class="rosto">
+    <div class="colecao">Coleção Matemática do Brasileirão 2026</div>
+    <h1>⚽ Matemática do Brasileirão</h1>
+    <div class="sub">Rodada 1 · 2º Ano do Ensino Fundamental</div>
+  </div>
+</div>
+
+<!-- EXERCÍCIOS -->
+<div class="pagina">
+  <div class="conteudo">
+    <div class="intro-aluno">Olá, torcedor craque! Você já sabe contar. Agora vamos <b>SOMAR</b> e <b>SUBTRAIR</b> com os times do Brasileirão 2026! Digite suas respostas e faça o gol! ⚽</div>
+
+    <div class="destaque">
+      <h2>🏆 DESTAQUE DA RODADA 1</h2>
+      <p>O São Paulo FC está na liderança do Brasileirão 2026! E o Remo, time do Pará, voltou à Série A depois de 31 anos! 🔵</p>
+    </div>
+
+    <!-- Cada input.resp tem data-r com a resposta correta -->
+    <div class="ex" id="ex1"><h3>EXERCÍCIO 1: Os Gols do São Paulo ⚽</h3>
+      <p>O São Paulo marcou 5 gols no primeiro jogo e 3 no segundo. Quantos gols no total?</p>
+      <p class="conta">5 + 3 = <input class="resp" data-ex="ex1" data-r="8"></p></div>
+
+    <div class="ex" id="ex2"><h3>EXERCÍCIO 2: O Flamengo Perdeu Pontos! 🔴⚫</h3>
+      <p>O Flamengo tinha 18 pontos e perdeu 3. Com quantos ficou?</p>
+      <p class="conta">18 - 3 = <input class="resp" data-ex="ex2" data-r="15"></p></div>
+
+    <div class="ex" id="ex3"><h3>EXERCÍCIO 3: A Torcida do Palmeiras 🟢</h3>
+      <p>Setor Norte: 12 · Setor Sul: 8. Quantos torcedores no total?</p>
+      <p class="conta">12 + 8 = <input class="resp" data-ex="ex3" data-r="20"></p>
+      <p>Quantos a mais no Setor Norte?</p>
+      <p class="conta">12 - 8 = <input class="resp" data-ex="ex3" data-r="4"></p></div>
+
+    <div class="ex" id="ex4"><h3>EXERCÍCIO 4: Corinthians x Grêmio ⚔️</h3>
+      <p>Corinthians: 4 gols · Grêmio: 2 gols.</p>
+      <p>Por quantos gols de diferença o Corinthians ganhou?</p>
+      <p class="conta">4 - 2 = <input class="resp" data-ex="ex4" data-r="2"></p></div>
+
+    <div class="ex" id="ex5"><h3>EXERCÍCIO 5: A Viagem do Remo ✈️</h3>
+      <p>Decolaram 15 pessoas e 6 esperavam. Quantas ao total?</p>
+      <p class="conta">15 + 6 = <input class="resp" data-ex="ex5" data-r="21"></p>
+      <div class="curiosidade">🗺️ Belém fica a mais de 2.500 km de São Paulo!</div></div>
+
+    <div class="ex" id="ex6"><h3>EXERCÍCIO 6: Tabela de Gols 📊</h3>
+      <table>
+        <tr><th>Time</th><th>Gols Feitos</th><th>Gols Sofridos</th></tr>
+        <tr><td>São Paulo ⭐</td><td>14</td><td>6</td></tr>
+        <tr><td>Palmeiras</td><td>11</td><td>5</td></tr>
+        <tr><td>Remo 🆕</td><td>7</td><td>10</td></tr>
+      </table>
+      <p>O São Paulo fez quantos gols a mais que o Remo?</p>
+      <p class="conta">14 - 7 = <input class="resp" data-ex="ex6" data-r="7"></p></div>
+
+    <div class="ex" id="ex7"><h3>EXERCÍCIO 7: O Atacante do Botafogo ⭐</h3>
+      <p>Semana 1: 3 gols · Semana 2: 4 gols. Quantos juntos?</p>
+      <p class="conta">3 + 4 = <input class="resp" data-ex="ex7" data-r="7"></p>
+      <p>Somando mais 2 da Semana 3:</p>
+      <p class="conta">7 + 2 = <input class="resp" data-ex="ex7" data-r="9"></p></div>
+
+    <div class="ex" id="ex8"><h3>EXERCÍCIO 8: Mais ou Menos Pontos? Vasco 🔵⚫</h3>
+      <p>O Vasco tem 11 pontos. Complete:</p>
+      <p class="conta">11 + 3 = <input class="resp" data-ex="ex8" data-r="14"></p>
+      <p class="conta">11 - 2 = <input class="resp" data-ex="ex8" data-r="9"></p>
+      <p class="conta">11 + 6 = <input class="resp" data-ex="ex8" data-r="17"></p>
+      <p class="conta">11 - 5 = <input class="resp" data-ex="ex8" data-r="6"></p></div>
+
+    <div class="ex" id="ex9"><h3>EXERCÍCIO 9: O Estádio do Atlético-MG ⚫⚪</h3>
+      <p>Cabem 20 pessoas por fileira. Já sentaram 13. Quantos lugares vazios?</p>
+      <p class="conta">20 - 13 = <input class="resp" data-ex="ex9" data-r="7"></p></div>
+
+    <div class="ex" id="ex10"><h3>EXERCÍCIO 10: Fluminense e seus Títulos 🔴⚪🟢</h3>
+      <p>4 títulos brasileiros + 1 sul-americano. Quantos ao todo?</p>
+      <p class="conta">4 + 1 = <input class="resp" data-ex="ex10" data-r="5"></p></div>
+
+    <div class="ex" id="ex11"><h3>EXERCÍCIO 11: Contagem Regressiva! Sport 🔴⚫⚪</h3>
+      <p>Precisa de 10 pontos e tem 4. Quantos faltam?</p>
+      <p class="conta">10 - 4 = <input class="resp" data-ex="ex11" data-r="6"></p></div>
+
+    <div class="ex" id="ex12"><h3>EXERCÍCIO 12: Soma dos Campeões 🏆</h3>
+      <p class="conta">8 + 11 = <input class="resp" data-ex="ex12" data-r="19"></p>
+      <p class="conta">15 + 8 = <input class="resp" data-ex="ex12" data-r="23"></p></div>
+
+    <div class="ex" id="ex13"><h3>EXERCÍCIO 13: A Rodada em Números 📋</h3>
+      <p>10 jogos, em 6 houve gol da casa. Em quantos não houve?</p>
+      <p class="conta">10 - 6 = <input class="resp" data-ex="ex13" data-r="4"></p></div>
+
+    <div class="ex desafio" id="ex14"><h3>EXERCÍCIO 14: DESAFIO DO CAMPEÃO! 🏆</h3>
+      <p>São Paulo: 15 · Palmeiras: 12. Qual a diferença?</p>
+      <p class="conta">15 - 12 = <input class="resp" data-ex="ex14" data-r="3"></p>
+      <p>Flamengo tem 13 e ganha mais 4. Quantos fica?</p>
+      <p class="conta">13 + 4 = <input class="resp" data-ex="ex14" data-r="17"></p></div>
+
+    <div class="area-final">
+      <button class="btn-finalizar" onclick="finalizar()">🏁 FINALIZAR E COMEMORAR!</button>
+    </div>
+  </div>
+</div>
+
+<!-- CERTIFICADO -->
+<div class="pagina" id="certificado">
+  <div class="conteudo">
+    <div class="cert-box">
+      <div class="troféu">🏆</div>
+      <h2>Certificado de Craque</h2>
+      <p>Este certificado é concedido a:</p>
+      <div class="cert-nome" id="cert-nome"></div>
+      <div class="estrelas" id="cert-estrelas"></div>
+      <div class="cert-placar" id="cert-placar"></div>
+      <p id="cert-msg" style="font-size:1.1rem;color:#445;"></p>
+      <p style="margin-top:14px;font-size:.9rem;color:#889;">Coleção Matemática do Brasileirão 2026 · Rodada 1</p>
+      <div class="btns-cert">
+        <button class="btn-sec" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+        <button class="btn-sec" onclick="location.reload()">🔄 Jogar de novo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let aluno={nome:'',time:'',serie:''};
+const TOTAL=14;
+
+function entrar(){
+  const nome=document.getElementById('in-nome').value.trim();
+  if(!nome){document.getElementById('aviso').style.display='block';return;}
+  aluno.nome=nome;
+  aluno.time=document.getElementById('in-time').value.trim();
+  aluno.serie=document.getElementById('in-serie').value.trim();
+  document.getElementById('tela-cadastro').style.display='none';
+  document.getElementById('barra-aluno').style.display='flex';
+  let txt='⚽ '+aluno.nome;
+  if(aluno.time) txt+=' <span>· torcedor do '+aluno.time+'</span>';
+  if(aluno.serie) txt+=' <span>· '+aluno.serie+'</span>';
+  document.getElementById('saudacao').innerHTML=txt;
+  atualizarPlacar();
+}
+
+// permite Enter para entrar
+document.getElementById('in-serie').addEventListener('keydown',e=>{if(e.key==='Enter')entrar();});
+document.getElementById('in-nome').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('in-time').focus();});
+
+// correção em tempo real
+document.querySelectorAll('input.resp').forEach(inp=>{
+  inp.addEventListener('input',()=>{
+    const v=inp.value.trim();
+    if(v===''){inp.className='resp';}
+    else if(v===inp.dataset.r){inp.className='resp certo';}
+    else{inp.className='resp errado';}
+    atualizarPlacar();
+  });
+});
+
+// conta quantos exercícios estão 100% corretos
+function exerciciosCorretos(){
+  let ok=0;
+  const grupos={};
+  document.querySelectorAll('input.resp').forEach(inp=>{
+    const ex=inp.dataset.ex;
+    if(!grupos[ex])grupos[ex]={total:0,certos:0};
+    grupos[ex].total++;
+    if(inp.value.trim()===inp.dataset.r)grupos[ex].certos++;
+  });
+  for(const ex in grupos){
+    const box=document.getElementById(ex);
+    if(grupos[ex].certos===grupos[ex].total){ok++;box.classList.add('ok');}
+    else{box.classList.remove('ok');}
+  }
+  return ok;
+}
+
+function atualizarPlacar(){
+  const ok=exerciciosCorretos();
+  document.getElementById('placar').textContent='🥅 Gols: '+ok+' / '+TOTAL;
+}
+
+function finalizar(){
+  const ok=exerciciosCorretos();
+  chuvaEmojis(ok);
+  document.getElementById('cert-nome').textContent=aluno.nome;
+  document.getElementById('cert-placar').textContent='🥅 Você fez '+ok+' de '+TOTAL+' gols!';
+  // estrelas conforme desempenho
+  let estrelas='⭐⭐⭐',msg='';
+  if(ok>=13){estrelas='⭐⭐⭐⭐⭐';msg='UAU! Você é o artilheiro da rodada! 🏆';}
+  else if(ok>=10){estrelas='⭐⭐⭐⭐';msg='Que craque! Jogou muito bem! ⚽';}
+  else if(ok>=6){estrelas='⭐⭐⭐';msg='Boa partida! Continue treinando! 💪';}
+  else{estrelas='⭐⭐';msg='Bom começo! Revise e tente marcar mais gols! 😉';}
+  document.getElementById('cert-estrelas').textContent=estrelas;
+  document.getElementById('cert-msg').textContent=msg;
+  document.getElementById('certificado').style.display='block';
+  document.getElementById('certificado').scrollIntoView({behavior:'smooth'});
+}
+
+function chuvaEmojis(qtd){
+  const emojis=qtd>=10?['🎉','⚽','🏆','🥅','⭐','🎊','🙌','😄']:['⚽','😊','👏','🥅','💪'];
+  const total=qtd>=10?70:40;
+  for(let i=0;i<total;i++){
+    setTimeout(()=>{
+      const e=document.createElement('div');
+      e.className='emoji-cai';
+      e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      e.style.left=Math.random()*100+'vw';
+      e.style.fontSize=(1.6+Math.random()*1.8)+'rem';
+      const dur=2.5+Math.random()*2.5;
+      e.style.animationDuration=dur+'s';
+      document.body.appendChild(e);
+      setTimeout(()=>e.remove(),dur*1000);
+    },i*60);
+  }
+}
+</script>
+
+</body>
+</html>
